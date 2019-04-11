@@ -1,0 +1,18 @@
+{
+	"name": "pofresh-rpc",
+	"version": "1.0.0",
+	"dependencies": {
+		"mqtt-connection": "^4.0.0",
+		"crc": "^3.8.0",
+		"pofresh-loader": "^1.0.0",
+		"stream-pkg": "0.0.5",
+		"pofresh-logger": "^1.0.0",
+		"uuid": "^3.3.2",
+		"async": "^2.6.2",
+		"bearcat-buffer": "0.1.x"
+	},
+	"devDependencies": {
+		"mocha": ">=0.0.1",
+		"should": ">=0.0.1"
+	}
+}
