@@ -1,9 +1,9 @@
-var m = new Buffer('hello');
+const m = Buffer.from('hello');
 console.log('old length %d', m.length);
-var p = JSON.stringify(m);
-var q = JSON.parse(p);
+const p = JSON.stringify(m);
+const q = JSON.parse(p);
 console.log(p);
-console.log('stringify length %d', new Buffer(p).length);
+console.log('stringify length %d', Buffer.from(p).length);
 console.log(q);
-var buf = new Buffer(q.data);
+const buf = Buffer.from(q.data);
 console.log(buf.toString())

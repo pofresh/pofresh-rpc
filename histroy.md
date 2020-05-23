@@ -1,3 +1,7 @@
+2.0.0 / 2020-05-11
+=================
+  * use es6
+  
 1.0.7 / 2017-01-20
 =================
   * [NEW] use mqtt-mailbox, mqtt-acceptor
@@ -7,3 +11,7 @@
   * [NEW] use pure javascript implemented mqtt protocol
   * [NEW] improved performance
   * [NEW] better benchmark samples
+  
+2.0.0 / 2020-05-24
+=================
+  * use es6

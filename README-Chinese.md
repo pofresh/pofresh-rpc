@@ -16,46 +16,46 @@ npm install pofresh-rpc
 ## 用法
 ### Server
 ``` javascript
-var Server = require('pofresh-rpc').server;
+const Server = require('pofresh-rpc').server;
 
 // remote service path info list
-var paths = [
+const paths = [
   {namespace: 'user', path: __dirname + '/remote/test'}
 ];
 
-var port = 3333;
+const port = 3333;
 
-var server = Server.create({paths: paths, port: port});
+const server = Server.create({paths: paths, port: port});
 server.start();
 console.log('rpc server started.');
 ```
 
 ### Client
 ``` javascript
-var Client = require('pofresh-rpc').client;
+const Client = require('pofresh-rpc').client;
 
 // remote service interface path info list
-var records = [
+const records = [
   {namespace: 'user', serverType: 'test', path: __dirname + '/remote/test'}
 ];
 
 // server info list
-var servers = [
+const servers = [
   {id: 'test-server-1', serverType: 'test', host: '127.0.0.1', port: 3333}
 ];
 
 // route parameter passed to route function
-var routeParam = null;
+let routeParam = null;
 
 // route context passed to route function
-var routeContext = servers;
+let routeContext = servers;
 
 // route function to caculate the remote server id
-var routeFunc = function(routeParam, msg, routeContext, cb) {
+const routeFunc = function(routeParam, msg, routeContext, cb) {
   cb(null, routeContext[0].id);
 };
 
-var client = Client.create({routeContext: routeContext, router: routeFunc});
+const client = Client.create({routeContext: routeContext, router: routeFunc});
 
 client.start(function(err) {
   console.log('rpc client start ok.');

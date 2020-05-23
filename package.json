@@ -1,18 +1,21 @@
 {
-	"name": "pofresh-rpc",
-	"version": "1.0.0",
-	"dependencies": {
-		"mqtt-connection": "^4.0.0",
-		"crc": "^3.8.0",
-		"pofresh-loader": "^1.0.0",
-		"stream-pkg": "0.0.5",
-		"pofresh-logger": "^1.0.0",
-		"uuid": "^3.3.2",
-		"async": "^2.6.2",
-		"bearcat-buffer": "0.1.x"
-	},
-	"devDependencies": {
-		"mocha": ">=0.0.1",
-		"should": ">=0.0.1"
-	}
+  "name": "pofresh-rpc",
+  "version": "2.0.0",
+  "dependencies": {
+    "async": "^2.6.2",
+    "bearcat-buffer": "0.1.x",
+    "crc": "^3.8.0",
+    "mqtt-connection": "^4.0.0",
+    "pofresh-loader": "^2.0.0",
+    "pofresh-logger": "^2.0.0",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "stream-pkg": "0.0.5",
+    "uuid": "^3.3.2",
+    "ws": "^7.3.0"
+  },
+  "devDependencies": {
+    "mocha": ">=0.0.1",
+    "should": ">=0.0.1"
+  }
 }

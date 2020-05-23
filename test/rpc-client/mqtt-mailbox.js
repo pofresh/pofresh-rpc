@@ -1,6 +1,6 @@
 const lib = process.env.POFRESH_RPC_COV ? 'lib-cov' : 'lib';
 const should = require('should');
-const Mailbox = require('../../' + lib + '/rpc-client/mailboxes/tcp-mailbox');
+const Mailbox = require('../../' + lib + '/rpc-client/mailboxes/mqtt-mailbox');
 const Server = require('../../').server;
 const Tracer = require('../../lib/util/tracer');
 
@@ -29,16 +29,16 @@ const msg = {
 
 const tracer = new Tracer(console, false);
 
-describe('tcp mailbox test', function () {
+describe('ws mailbox test', function () {
     let gateway;
 
     before(function (done) {
         //start remote server
         const opts = {
-            acceptorFactory: Server.TcpAcceptor,
+            acceptorFactory: Server.MqttAcceptor,
             paths: paths,
             port: port,
-            bufferMsg: true,
+            // bufferMsg: true,
             interval: 30
         };
 
@@ -51,6 +51,7 @@ describe('tcp mailbox test', function () {
         //stop remote server
         gateway.stop();
         done();
+        setTimeout(() => process.exit(), WAIT_TIME);
     });
 
     describe('#create', function () {
@@ -77,7 +78,7 @@ describe('tcp mailbox test', function () {
                 should.exist(err);
                 done();
             });
-        }).timeout(3000);
+        }).timeout(5000);
     });
 
     describe('#send', function () {
@@ -85,7 +86,6 @@ describe('tcp mailbox test', function () {
             const mailbox = Mailbox.create(server);
             mailbox.connect(tracer, function (err) {
                 should.not.exist(err);
-
                 mailbox.send(tracer, msg, null, function (tracer, err, res) {
                     should.exist(res);
                     res[1].should.equal(msg.args[0] + 1);
@@ -206,7 +206,7 @@ describe('tcp mailbox test', function () {
                     mailbox.close();
                 }
                 done();
-            }, WAIT_TIME);
+            }, WAIT_TIME * 10);
         });
 
         it('should distinguish different services and keep the right request/response relationship if the client uses message cache mode but server not', function (done) {
@@ -273,7 +273,7 @@ describe('tcp mailbox test', function () {
                 }
                 gateway.stop();
                 done();
-            }, WAIT_TIME);
+            }, WAIT_TIME * 10);
         });
     });
 
