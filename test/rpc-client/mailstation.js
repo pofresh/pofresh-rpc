@@ -224,6 +224,7 @@ describe('mail station', function () {
 
             station.on('error', function (err) {
                 should.exist(err);
+                // console.log(err)
                 ('fail to connect to remote server: ' + serverId).should.equal(err.message);
                 eventCount++;
             });

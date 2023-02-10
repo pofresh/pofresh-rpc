@@ -1,14 +1,18 @@
 /**
  * Mock remote service
  */
-module.exports = function (app) {
-    return {
-        doService: function (value, cb) {
-            cb(null, value + 1);
-        },
 
-        doAddTwo: function (value, cb) {
-            cb(null, value + 2);
-        }
-    };
+class Service {
+    doService(value, cb) {
+        console.log('111111');
+        cb(null, value + 1);
+    }
+
+    doAddTwo(value, cb) {
+        cb(null, value + 2);
+    }
+}
+
+module.exports = function (app) {
+   return new Service();
 };

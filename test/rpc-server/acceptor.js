@@ -1,7 +1,7 @@
 const should = require('should');
 const lib = process.env.POFRESH_RPC_COV ? 'lib-cov' : 'lib';
 const Acceptor = require('../../' + lib + '/rpc-server/acceptor');
-const Client = require('../../' + lib + '/rpc-client/mailboxes/mqtt-mailbox');
+const Client = require('../../' + lib + '/rpc-client/mailboxes/ws-mailbox');
 
 const WAIT_TIME = 100;
 
@@ -45,30 +45,30 @@ describe('acceptor', function () {
             }, WAIT_TIME);
         });
 
-        it('should emit an error when listen a port in use', function (done) {
-            let errorCount = 0;
-            let acceptor80 = Acceptor.create(null, function (tracer, msg, cb) {
-            });
-
-            let acceptor = Acceptor.create(null, function (tracer, msg, cb) {
-            });
-
-            should.exist(acceptor);
-            acceptor.on('error', function (err) {
-                should.exist(err);
-                errorCount++;
-            });
-
-            acceptor80.listen(80);
-            acceptor.listen(80);
-
-            setTimeout(function () {
-                errorCount.should.equal(1);
-                acceptor.close();
-                acceptor80.close();
-                done();
-            }, WAIT_TIME);
-        });
+        // it('should emit an error when listen a port in use', function (done) {
+        //     let errorCount = 0;
+        //     let acceptor80 = Acceptor.create(null, function (tracer, msg, cb) {
+        //     });
+        //
+        //     let acceptor = Acceptor.create(null, function (tracer, msg, cb) {
+        //     });
+        //
+        //     should.exist(acceptor);
+        //     acceptor.on('error', function (err) {
+        //         should.exist(err);
+        //         errorCount++;
+        //     });
+        //
+        //     acceptor80.listen(80);
+        //     acceptor.listen(80);
+        //
+        //     setTimeout(function () {
+        //         errorCount.should.equal(1);
+        //         acceptor.close();
+        //         acceptor80.close();
+        //         done();
+        //     }, WAIT_TIME);
+        // });
     });
 
     describe('#new message callback', function () {

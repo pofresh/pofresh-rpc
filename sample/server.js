@@ -8,6 +8,10 @@ const paths = [
 const port = 3333;
 
 const server = Server.create({paths: paths, port: port});
+
+server.on('error', (error) => console.error('error', error));
+server.on('closed', () => console.info('closed'));
+
 server.start();
 console.log('rpc server started.');
 

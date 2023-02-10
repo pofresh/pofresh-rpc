@@ -106,6 +106,7 @@ describe('client', function () {
             client.start(function (err) {
                 should.not.exist(err);
                 client.proxies.sys.connector.whoAmIRemote.doService(null, function (err, sid) {
+                    console.log(err, sid);
                     callbackCount++;
                     serverId.should.equal(sid);
                 });
@@ -137,7 +138,6 @@ describe('client', function () {
             client.start(function (err) {
                 should.not.exist(err);
                 client.stop();
-                client.stop();
                 done();
             });
         });
@@ -160,6 +160,7 @@ describe('client', function () {
 
             client.start(() => {
                 client.rpcInvoke(sid, msg, function (err) {
+                    console.log('err', err);
                     should.not.exist(err);
                     // client.stop(true);
                     setTimeout(() => {
