@@ -1,7 +1,7 @@
 const should = require('should');
 const lib = process.env.POFRESH_RPC_COV ? 'lib-cov' : 'lib';
 const Acceptor = require('../../' + lib + '/rpc-server/acceptor');
-const Client = require('../../' + lib + '/rpc-client/mailboxes/ws-mailbox');
+const Client = require('../../' + lib + '/rpc-client/mailboxes/sio-mailbox');
 
 const WAIT_TIME = 100;
 
@@ -28,7 +28,7 @@ describe('acceptor', function () {
             });
 
             should.exist(acceptor);
-            acceptor.on('error', function (err) {
+            acceptor.on('error', function () {
                 errorCount++;
             });
             acceptor.on('closed', function () {

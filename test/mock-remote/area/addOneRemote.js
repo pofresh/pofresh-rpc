@@ -4,7 +4,6 @@
 
 class Service {
     doService(value, cb) {
-        console.log('111111');
         cb(null, value + 1);
     }
 
@@ -13,6 +12,6 @@ class Service {
     }
 }
 
-module.exports = function (app) {
+module.exports = function () {
    return new Service();
 };

@@ -1,6 +1,6 @@
 const lib = process.env.POFRESH_RPC_COV ? 'lib-cov' : 'lib';
 const should = require('should');
-const Mailbox = require('../../' + lib + '/rpc-client/mailboxes/mqtt-mailbox');
+const Mailbox = require('../../' + lib + '/rpc-client/mailboxes/sio-mailbox');
 const Server = require('../../').server;
 const Tracer = require('../../lib/util/tracer');
 
@@ -29,13 +29,13 @@ const msg = {
 
 const tracer = new Tracer(console, false);
 
-describe('mqtt mailbox test', function () {
+describe('sio mailbox test', function () {
     let gateway;
 
     before(function (done) {
         //start remote server
         const opts = {
-            acceptorFactory: Server.MqttAcceptor,
+            acceptorFactory: Server.SIOAcceptor,
             paths: paths,
             port: port,
             // bufferMsg: true,

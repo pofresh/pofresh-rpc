@@ -280,11 +280,14 @@ describe('ws mailbox test', function () {
         it('should emit a close event when mailbox close', function (done) {
             let closeEventCount = 0;
             const mailbox = Mailbox.create(server);
+
+            mailbox.on('close', function () {
+                closeEventCount++;
+            });
+
             mailbox.connect(tracer, function (err) {
                 should.not.exist(err);
-                mailbox.on('close', function () {
-                    closeEventCount++;
-                });
+
                 mailbox.close();
             });
 
@@ -299,7 +302,7 @@ describe('ws mailbox test', function () {
             mailbox.connect(tracer, function (err) {
                 should.not.exist(err);
                 mailbox.close();
-                mailbox.send(tracer, msg, null, function (tracer, err, res) {
+                mailbox.send(tracer, msg, null, function (tracer, err) {
                     should.exist(err);
                     done();
                 });

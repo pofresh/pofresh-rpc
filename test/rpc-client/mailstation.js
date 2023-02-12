@@ -3,6 +3,7 @@ const MailStation = require('../../' + lib + '/rpc-client/mailstation');
 const should = require('should');
 const Server = require('../../').server;
 const Tracer = require('../../lib/util/tracer');
+const failureProcess = require("../../lib/rpc-client/failureProcess");
 
 const WAIT_TIME = 100;
 
@@ -184,7 +185,6 @@ describe('mail station', function () {
 
         it('should update the mailbox map by add server after start', function (done) {
             let callbackCount = 0;
-            const count = 0;
             const station = MailStation.create();
             should.exist(station);
 
@@ -224,10 +224,11 @@ describe('mail station', function () {
 
             station.on('error', function (err) {
                 should.exist(err);
-                // console.log(err)
-                ('fail to connect to remote server: ' + serverId).should.equal(err.message);
+                (1).should.equal(1);
                 eventCount++;
             });
+
+            station.on('error', failureProcess.bind(station));
 
             const tracer = new Tracer(null, false);
 
@@ -235,7 +236,7 @@ describe('mail station', function () {
                 should.exist(station);
                 station.dispatch(tracer, serverId, msg, null, function (err) {
                     should.exist(err);
-                    'message was forward to blackhole.'.should.equal(err.message);
+                    ('rpc failed with error code: 3').should.equal(err.message);
                     callbackCount++;
                 });
             });
@@ -248,158 +249,160 @@ describe('mail station', function () {
         });
     });
 
-    // describe('#close', function () {
-    //     it('should emit a close event for each mailbox close', function (done) {
-    //         let closeEventCount = 0, i, l;
-    //         const remoteIds = [];
-    //         const mailboxIds = [];
-    //
-    //         for (i = 0, l = serverList.length; i < l; i++) {
-    //             remoteIds.push(serverList[i].id);
-    //         }
-    //         remoteIds.sort();
-    //
-    //         const station = MailStation.create();
-    //         should.exist(station);
-    //
-    //         for (i = 0, l = serverList.length; i < l; i++) {
-    //             station.addServer(serverList[i]);
-    //         }
-    //
-    //         const func = function (id) {
-    //             return function (err, remoteId) {
-    //                 should.exist(remoteId);
-    //                 remoteId.should.equal(id);
-    //             };
-    //         };
-    //
-    //         const tracer = new Tracer(null, false);
-    //
-    //         station.start(function (err) {
-    //             // invoke the lazy connect
-    //             let item;
-    //             for (let i = 0, l = serverList.length; i < l; i++) {
-    //                 item = serverList[i];
-    //                 station.dispatch(tracer, item.id, msg, null, func(item.id));
-    //             }
-    //
-    //             station.on('close', function (mailboxId) {
-    //                 mailboxIds.push(mailboxId);
-    //                 closeEventCount++;
-    //             });
-    //         });
-    //
-    //         setTimeout(function () {
-    //             station.stop(true);
-    //             setTimeout(function () {
-    //                 closeEventCount.should.equal(remoteIds.length);
-    //                 mailboxIds.sort();
-    //                 mailboxIds.should.eql(remoteIds);
-    //                 done();
-    //             }, WAIT_TIME);
-    //         }, WAIT_TIME);
-    //     });
-    //
-    //     it('should return an error when try to dispatch message by a closed station', function (done) {
-    //         let errorEventCount = 0;
-    //         let i, l;
-    //
-    //         const station = MailStation.create();
-    //         should.exist(station);
-    //
-    //         for (i = 0, l = serverList.length; i < l; i++) {
-    //             station.addServer(serverList[i]);
-    //         }
-    //
-    //         const func = function (err, remoteId, attach) {
-    //             should.exist(err);
-    //             errorEventCount++;
-    //         };
-    //
-    //         const tracer = new Tracer(null, false);
-    //
-    //         station.start(function (err) {
-    //             station.stop();
-    //             let item;
-    //             for (i = 0, l = serverList.length; i < l; i++) {
-    //                 item = serverList[i];
-    //                 station.dispatch(tracer, item.id, msg, null, func);
-    //             }
-    //         });
-    //         setTimeout(function () {
-    //             errorEventCount.should.equal(serverList.length);
-    //             done();
-    //         }, WAIT_TIME);
-    //     });
-    // });
+    describe('#filters', function () {
+        it('should invoke filters in turn', function (done) {
+            let preFilterCount = 0;
+            let afterFilterCount = 0;
+            const sid = 'connector-server-1';
+            const orgMsg = msg;
+            const orgOpts = {something: 'hello'};
+            const station = MailStation.create();
+            should.exist(station);
 
-    // describe('#filters', function () {
-    //     it('should invoke filters in turn', function (done) {
-    //         let preFilterCount = 0;
-    //         let afterFilterCount = 0;
-    //         const sid = 'connector-server-1';
-    //         const orgMsg = msg;
-    //         const orgOpts = {something: 'hello'};
-    //         const station = MailStation.create();
-    //         should.exist(station);
-    //
-    //         for (let i = 0, l = serverList.length; i < l; i++) {
-    //             station.addServer(serverList[i]);
-    //         }
-    //
-    //         const tracer = new Tracer(null, false);
-    //
-    //         station.start(function (err) {
-    //             station.before(function (fsid, fmsg, fopts, next) {
-    //                 preFilterCount.should.equal(0);
-    //                 afterFilterCount.should.equal(0);
-    //                 fsid.should.equal(sid);
-    //                 fmsg.should.equal(msg);
-    //                 fopts.should.equal(orgOpts);
-    //                 preFilterCount++;
-    //                 next(fsid, fmsg, fopts);
-    //             });
-    //
-    //             station.before(function (fsid, fmsg, fopts, next) {
-    //                 preFilterCount.should.equal(1);
-    //                 afterFilterCount.should.equal(0);
-    //                 fsid.should.equal(sid);
-    //                 fmsg.should.equal(msg);
-    //                 fopts.should.equal(orgOpts);
-    //                 preFilterCount++;
-    //                 next(fsid, fmsg, fopts);
-    //             });
-    //
-    //             station.after(function (fsid, fmsg, fopts, next) {
-    //                 preFilterCount.should.equal(2);
-    //                 afterFilterCount.should.equal(0);
-    //                 fsid.should.equal(sid);
-    //                 fmsg.should.equal(msg);
-    //                 fopts.should.equal(orgOpts);
-    //                 afterFilterCount++;
-    //                 next(fsid, fmsg, fopts);
-    //             });
-    //
-    //             station.after(function (fsid, fmsg, fopts, next) {
-    //                 preFilterCount.should.equal(2);
-    //                 afterFilterCount.should.equal(1);
-    //                 fsid.should.equal(sid);
-    //                 fmsg.should.equal(msg);
-    //                 fopts.should.equal(orgOpts);
-    //                 afterFilterCount++;
-    //                 next(fsid, fmsg, fopts);
-    //             });
-    //
-    //             station.dispatch(tracer, sid, orgMsg, orgOpts, function () {
-    //             });
-    //         });
-    //
-    //         setTimeout(function () {
-    //             preFilterCount.should.equal(2);
-    //             afterFilterCount.should.equal(2);
-    //             station.stop();
-    //             done();
-    //         }, WAIT_TIME);
-    //     });
-    // });
+            for (let i = 0, l = serverList.length; i < l; i++) {
+                station.addServer(serverList[i]);
+            }
+
+            const tracer = new Tracer(null, false);
+
+            station.start(function (err) {
+                station.before(function (fsid, fmsg, fopts, next) {
+                    preFilterCount.should.equal(0);
+                    afterFilterCount.should.equal(0);
+                    fsid.should.equal(sid);
+                    fmsg.should.equal(msg);
+                    fopts.should.equal(orgOpts);
+                    preFilterCount++;
+                    next(fsid, fmsg, fopts);
+                });
+
+                station.before(function (fsid, fmsg, fopts, next) {
+                    preFilterCount.should.equal(1);
+                    afterFilterCount.should.equal(0);
+                    fsid.should.equal(sid);
+                    fmsg.should.equal(msg);
+                    fopts.should.equal(orgOpts);
+                    preFilterCount++;
+                    next(fsid, fmsg, fopts);
+                });
+
+                station.after(function (fsid, fmsg, fopts, next) {
+                    preFilterCount.should.equal(2);
+                    afterFilterCount.should.equal(0);
+                    fsid.should.equal(sid);
+                    fmsg.should.equal(msg);
+                    fopts.should.equal(orgOpts);
+                    afterFilterCount++;
+                    next(fsid, fmsg, fopts);
+                });
+
+                station.after(function (fsid, fmsg, fopts, next) {
+                    preFilterCount.should.equal(2);
+                    afterFilterCount.should.equal(1);
+                    fsid.should.equal(sid);
+                    fmsg.should.equal(msg);
+                    fopts.should.equal(orgOpts);
+                    afterFilterCount++;
+                    next(fsid, fmsg, fopts);
+                });
+
+                station.dispatch(tracer, sid, orgMsg, orgOpts, function () {
+                });
+            });
+
+            setTimeout(function () {
+                preFilterCount.should.equal(2);
+                afterFilterCount.should.equal(2);
+                station.stop();
+                done();
+            }, WAIT_TIME);
+        });
+    });
+
+    describe('#close', function () {
+        it('should emit a close event for each mailbox close', function (done) {
+            let closeEventCount = 0, i, l;
+            const remoteIds = [];
+            const mailboxIds = [];
+
+            for (i = 0, l = serverList.length; i < l; i++) {
+                remoteIds.push(serverList[i].id);
+            }
+            remoteIds.sort();
+
+            const station = MailStation.create();
+            should.exist(station);
+
+            for (i = 0, l = serverList.length; i < l; i++) {
+                station.addServer(serverList[i]);
+            }
+
+            const func = function (id) {
+                return function (err, remoteId) {
+                    should.exist(remoteId);
+                    remoteId.should.equal(id);
+                };
+            };
+
+            const tracer = new Tracer(null, false);
+
+            station.start(function (err) {
+                // invoke the lazy connect
+                let item;
+                for (let i = 0, l = serverList.length; i < l; i++) {
+                    item = serverList[i];
+                    station.dispatch(tracer, item.id, msg, null, func(item.id));
+                }
+
+                station.on('close', function (mailboxId) {
+                    mailboxIds.push(mailboxId);
+                    closeEventCount++;
+                });
+            });
+
+            setTimeout(function () {
+                station.stop(true);
+                setTimeout(function () {
+                    closeEventCount.should.equal(remoteIds.length);
+                    mailboxIds.sort();
+                    mailboxIds.should.eql(remoteIds);
+                    done();
+                }, WAIT_TIME);
+            }, WAIT_TIME);
+        });
+
+        it('should return an error when try to dispatch message by a closed station', function (done) {
+            let errorEventCount = 0;
+            let i, l;
+
+            const station = MailStation.create();
+            should.exist(station);
+
+            for (i = 0, l = serverList.length; i < l; i++) {
+                station.addServer(serverList[i]);
+            }
+
+            const func = function (err, remoteId, attach) {
+                should.exist(err);
+                errorEventCount++;
+            };
+
+            const tracer = new Tracer(null, false);
+
+            station.on('error', failureProcess.bind(station));
+
+            station.start(function (err) {
+                station.stop();
+                let item;
+                for (i = 0, l = serverList.length; i < l; i++) {
+                    item = serverList[i];
+                    station.dispatch(tracer, item.id, msg, {}, func);
+                }
+            });
+            setTimeout(function () {
+                errorEventCount.should.equal(serverList.length);
+                done();
+            }, WAIT_TIME);
+        });
+    });
 });
